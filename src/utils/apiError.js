@@ -9,13 +9,13 @@ class apiError extends Error{
         this.statusCode=statusCode 
         this.data=nulln
         this.message=message
-        this.success=false;
-        this.errors=this.errors
+        this.success=false
+        this.errors=errors
 
         if (stack){
             this.stack=stack
         } else{
-            Error.captureStackTrace(this.this.constructor)
+            Error.captureStackTrace(this,this.constructor)
         }
     }
 }
