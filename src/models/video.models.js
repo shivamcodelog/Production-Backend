@@ -3,7 +3,7 @@ import mongooseAggregatePaginate from "mongoose-aggregate-paginate-v2";
 //This adds pagination support to MongoDB aggregation pipelines for the videoSchema
 
 
-const videoSchema=new Schema(
+const videoSchema=new mongoose.Schema(
     {
         videoFile:{
             type:String, //cloudnary
