@@ -16,8 +16,8 @@ const registerUser=asyncHandler(async (req,res)=>{
     // return response
 
     const {fullname,email,username,password }=req.body
-    console.log("email:",email )
-    console.log("password:",password )
+    // console.log("email:",email )
+    // console.log("password:",password )
 
     // if (fullname===""){
     //     throw new apiError(400,"fullname is required ")
@@ -26,29 +26,37 @@ const registerUser=asyncHandler(async (req,res)=>{
     // OR
 
     if (
-        [fullname,email,username,password].some((field)=>field?.trime()=="")
+        [fullname,email,username,password].some((field)=>field?.trim()=="")
     ){
         throw new apiError(400,"All fields are required")
     }
 
-    const exitedUser =User.findOne({
+    const exitedUser =await User.findOne({
         $or:[{username}, {email}]
     })
 
     if (exitedUser){
         throw new apiError(409,"User with email or username already exist ")
     }
+
+    // console.log(req.files)
+    
      
     //?--> optional
     const avatarLoacalPath=req.files?.avatar[0]?.path;
-    const coverImagePath=req.files?.coverImage[0]?.path;
+    // const coverImagePath=req.files?.coverImage[0]?.path;
+
+    let coverImageLocalPath;
+    if(req.files && Array.isArray(req.files.coverImage) && req.files.coverImage.lenght >0){
+        coverImageLocalPath=req.files.coverImage[0].path 
+    }
 
     if (!avatarLoacalPath){
         throw new apiError(400,"Avatar file is Required")
     }
 
    const avatar= await uploadCloudnary(avatarLoacalPath)
-   const coverImage=await uploadCloudnary(coverImagePath)
+   const coverImage=await uploadCloudnary(coverImageLocalPath)
 
    if(!avatar){
     throw new apiError(400,"Avatar file is Required")
