@@ -432,6 +432,55 @@ const getUserChannelProfile=asyncHandler(async(req,res)=>{
 
 })
 
+const getWatchHistory=asyncHandler(async(req,res)=>{
+    const user=await User.aggregate([
+        {
+            $match:{//---> req.user._id  give us string
+                _id:new mongoose.Types.ObjectId(req.user._id)
+                //--> while writing aggregate pipeline moogoose don't step in here ,code for aggregate pipeline goes directly so instead of req.user._id we write -->new mongoose.Types.ObjectId(req.user._id)  (mongoose object id)
+                
+            }
+        },
+        {
+            $lookup:{
+                from:"videos",
+                localField:"watchHistory",
+                foreignField:"_id",
+                as:"watchHistory",
+
+                pipeline:[
+                    {
+                        $lookup:{
+                            from:"users",
+                            localField:"owner",
+                            foreignField:"_id",
+                            as:"owner",
+
+                            pipeline:
+                            [{ $project:{
+                                    fullname:1,
+                                    username:1,
+                                    avatar:1,
+                                    
+
+                                }}]
+                            
+                        }
+
+                    },
+                    {
+                        $addFields:{
+                            owner:{
+                                $first:"$owner"
+                            }
+                        }
+                    }
+                ]
+            }
+        }
+    ])
+})
+
 
 
 export {registerUser,
